@@ -37,6 +37,9 @@ interface Transaction {
   reason?: string // Optional reason field
   status?: string // Optional status field for pending transactions
   submittedAt?: string // Optional submission timestamp for pending transactions
+  rejectionReason?: string // Optional rejection reason field
+  declineReason?: string // Optional decline reason field
+  isPendingTransaction?: boolean // Optional pending flag
 }
 
 export default function Dashboard() {
@@ -339,7 +342,9 @@ export default function Dashboard() {
     setToast({
       message: 'Receipt downloaded successfully!',
       type: 'success',
-      isVisible: true
+      isVisible: true,
+      transactionType: undefined,
+      amount: undefined
     })
   }
 
@@ -400,7 +405,7 @@ export default function Dashboard() {
       const isConfirmed = (
         (!txn.status || txn.status === 'approved' || txn.status === 'completed') &&
         !txn.isPendingTransaction &&
-        !txn.declineReason &&
+        !txn.rejectionReason &&
         !txn.rejectionReason
       );
       if (isConfirmed) {
@@ -445,7 +450,6 @@ export default function Dashboard() {
       const isConfirmed = (
         (!txn.status || txn.status === 'approved' || txn.status === 'completed') &&
         !txn.isPendingTransaction &&
-        !txn.declineReason &&
         !txn.rejectionReason
       )
       if (isConfirmed && txnDate.getMonth() === currentMonth && txnDate.getFullYear() === currentYear) {
@@ -483,15 +487,15 @@ export default function Dashboard() {
       // Merge all, always prefer adminUserTxns (approved/declined) over pending/saved for the same ID
       const txnMap = new Map();
       // First, add all userSavedTxns (lowest priority)
-      userSavedTxns.forEach((txn) => {
+      userSavedTxns.forEach((txn: Transaction) => {
         txnMap.set(txn.id, txn);
       });
       // Next, add all userPendingAndDeclined (overwrites saved if same ID)
-      userPendingAndDeclined.forEach((txn) => {
+      userPendingAndDeclined.forEach((txn: any) => {
         txnMap.set(txn.id, txn);
       });
       // Finally, add all adminUserTxns (highest priority, overwrites if same ID)
-      adminUserTxns.forEach((txn) => {
+      adminUserTxns.forEach((txn: any) => {
         txnMap.set(txn.id, txn);
       });
       const uniqueTransactions = Array.from(txnMap.values());
@@ -994,7 +998,7 @@ export default function Dashboard() {
                 let statusColor = ''
                 let statusBg = ''
                 let statusText = ''
-                if (transaction.status === 'declined' || transaction.status === 'rejected' || transaction.declineReason || transaction.rejectionReason) {
+                if (transaction.status === 'declined' || transaction.status === 'rejected' || transaction.rejectionReason) {
                   statusColor = 'text-red-600'
                   statusBg = 'bg-red-100'
                   statusText = 'Declined'
