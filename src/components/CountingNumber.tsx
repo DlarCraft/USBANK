@@ -14,9 +14,15 @@ export default function CountingNumber({
   formatAsCurrency = false 
 }: CountingNumberProps) {
   const [displayValue, setDisplayValue] = useState(value)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // For smooth animation after hydration
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return;
+    // For smooth animation after hydration (client only)
     const startValue = 0
     const endValue = value
     const difference = endValue - startValue
@@ -40,7 +46,7 @@ export default function CountingNumber({
     }
     const animationId = requestAnimationFrame(updateValue)
     return () => cancelAnimationFrame(animationId)
-  }, [value, duration])
+  }, [value, duration, mounted])
 
   const formatNumber = (num: number) => {
     if (formatAsCurrency) {
@@ -55,6 +61,11 @@ export default function CountingNumber({
       minimumFractionDigits: 2, 
       maximumFractionDigits: 2 
     })
+  }
+
+  // On server, render the final value directly to avoid hydration mismatch
+  if (!mounted) {
+    return <span>{formatNumber(value)}</span>
   }
 
   return <span>{formatNumber(displayValue)}</span>

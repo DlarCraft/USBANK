@@ -357,6 +357,8 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [transferAmount, setTransferAmount] = useState('')
   const [transferRecipient, setTransferRecipient] = useState('')
+  const [transferRecipientBank, setTransferRecipientBank] = useState('')
+  const [transferRecipientAccount, setTransferRecipientAccount] = useState('')
   const [transferReason, setTransferReason] = useState('')
   const [pendingTransactions, setPendingTransactions] = useState<any[]>([])
   const [declinedTransactions, setDeclinedTransactions] = useState<any[]>([])
@@ -627,11 +629,17 @@ export default function Dashboard() {
       return
     }
 
-    if (transferAmount && transferRecipient && parseFloat(transferAmount) > 0) {
+    if (
+      transferAmount &&
+      transferRecipient &&
+      transferRecipientBank &&
+      transferRecipientAccount &&
+      parseFloat(transferAmount) > 0
+    ) {
       const amount = parseFloat(transferAmount)
       if (amount <= balance) {
-        // Create description with optional reason
-        const baseDescription = `Transfer to ${transferRecipient}`
+        // Create description with all details
+        const baseDescription = `Transfer to ${transferRecipient} (${transferRecipientBank}, Acct: ${transferRecipientAccount})`
         const description = transferReason 
           ? `${baseDescription} - ${transferReason}`
           : baseDescription
@@ -647,6 +655,8 @@ export default function Dashboard() {
 
         setTransferAmount('')
         setTransferRecipient('')
+        setTransferRecipientBank('')
+        setTransferRecipientAccount('')
         setTransferReason('')
         setShowTransferModal(false)
         loadPendingTransactions() // Refresh pending transactions
@@ -800,7 +810,7 @@ export default function Dashboard() {
                   <div 
                     className="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-cover border-2 sm:border-3 border-blue-200 bg-cover bg-center bg-no-repeat"
                     style={{
-                      backgroundImage: `url('/Screenshot_20250727-204221_Instagram.jpg')`,
+                      backgroundImage: `url('/joseph.jpg')`,
                       backgroundColor: '#DBEAFE'
                     }}
                   ></div>
@@ -808,7 +818,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="ml-4 sm:ml-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome back, Michael Paul!</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Welcome back, Joseph Morris!</h2>
                 <p className="text-gray-600 mt-1 text-sm sm:text-base">
                   Here's your account overview for today, {new Date().toLocaleDateString('en-US', { 
                     weekday: 'long', 
@@ -1070,17 +1080,40 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Recipient
+                  Recipient Name
                 </label>
                 <input
                   type="text"
                   value={transferRecipient}
                   onChange={(e) => setTransferRecipient(e.target.value)}
                   className="w-full px-3 sm:px-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-sm"
-                  placeholder="Enter recipient name or account"
+                  placeholder="Enter recipient's full name"
                 />
               </div>
-              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recipient Bank
+                </label>
+                <input
+                  type="text"
+                  value={transferRecipientBank}
+                  onChange={(e) => setTransferRecipientBank(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-sm"
+                  placeholder="Enter recipient's bank name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recipient Account Number
+                </label>
+                <input
+                  type="text"
+                  value={transferRecipientAccount}
+                  onChange={(e) => setTransferRecipientAccount(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-3 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base sm:text-sm"
+                  placeholder="Enter recipient's account number"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Amount
@@ -1095,10 +1128,9 @@ export default function Dashboard() {
                   step="0.01"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Reason (Optional)
+                  Reason for Transfer
                 </label>
                 <input
                   type="text"

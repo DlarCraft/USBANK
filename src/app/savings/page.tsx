@@ -56,7 +56,17 @@ export default function Savings() {
 
   // Initialize state with data from localStorage or default values
   const [balance, setBalance] = useState(() => loadFromStorage('bankBalance', 545780.50))
-  const [savingsBalance, setSavingsBalance] = useState(() => loadFromStorage('bankSavingsBalance', 0))
+  const [savingsBalance, setSavingsBalance] = useState(() => {
+    const loaded = loadFromStorage('bankSavingsBalance', 25000000);
+    return loaded < 25000000 ? 25000000 : loaded;
+  })
+
+  // Always enforce minimum savings balance on mount
+  useEffect(() => {
+    if (savingsBalance < 25000000) {
+      setSavingsBalance(25000000);
+    }
+  }, [])
   const [showBalance, setShowBalance] = useState(true)
   const [showSavingsBalance, setShowSavingsBalance] = useState(true)
   const [transactions, setTransactions] = useState<Transaction[]>(() => loadFromStorage('bankTransactions', []))
@@ -211,7 +221,7 @@ export default function Savings() {
                   <div 
                     className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 hover:border-blue-300 transition-colors cursor-pointer bg-cover bg-center bg-no-repeat"
                     style={{
-                      backgroundImage: `url('/Screenshot_20250727-204221_Instagram.jpg')`,
+                      backgroundImage: `url('/joseph.jpg')`,
                       backgroundColor: '#F3F4F6'
                     }}
                   >
@@ -224,7 +234,7 @@ export default function Savings() {
                   <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-400 border-2 border-white rounded-full"></div>
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-gray-900">Michael Paul</p>
+                  <p className="text-sm font-medium text-gray-900">Joseph Morris</p>
                   <p className="text-xs text-gray-500">Premium Savings</p>
                 </div>
               </div>

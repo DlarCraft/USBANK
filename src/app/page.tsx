@@ -13,8 +13,8 @@ export default function LoginPage() {
   const router = useRouter()
 
   // Predefined account credentials
-  const VALID_EMAIL = 'roofingconstructionboss@gmail.com'
-  const VALID_PASSWORD = 'michaelpaulwoods121'
+  const VALID_EMAIL = 'jonathanmorris159@gmail.com'
+  const VALID_PASSWORD = 'jonathan20'
   
   // Admin credentials
   const ADMIN_EMAIL = 'admin@usbank.com'
